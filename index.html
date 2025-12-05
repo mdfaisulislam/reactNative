@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Native Roadmap 2025 - Interactive Guide</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chosen Palette: "React Modern" - Clean White/Gray background, Dark text, React Blue (#61dafb) accents, Slate Grays for structure -->
+    <!-- Application Structure Plan: 
+         1. Hero Section: Introduction and overall goal.
+         2. Skill Matrix Dashboard: Visualizing the multi-disciplinary nature of RN development (Chart.js).
+         3. Interactive Phase Navigator: The core "Map". Users select a phase (0-4).
+         4. Dynamic Content Area: Displays the selected phase's modules (Topics, Concepts, Rationale) as interactive cards with progress checkboxes.
+         5. Complexity Graph: Visualizing the learning curve over time (Chart.js).
+         WHY: This structure moves from high-level context (Skills) to granular learning (Phases/Topics) to expectation setting (Complexity), guiding the user logically.
+    -->
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .phase-btn.active {
+            background-color: #0ea5e9; /* Sky 500 */
+            color: white;
+            border-color: #0ea5e9;
+        }
+        .check-custom:checked + div {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+        /* Custom scrollbar for content area if needed */
+        .content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+        .content-area::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        .content-area::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        .content-area::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl font-bold tracking-tight text-[#61dafb]">⚛️ RN 2025</span>
+                <span class="hidden md:inline text-slate-400 text-sm border-l border-slate-700 pl-3">Interactive Learning Roadmap</span>
+            </div>
+            <div class="text-sm font-medium">
+                <span id="progress-counter" class="text-[#61dafb]">0</span> / <span id="total-items">0</span> Mastered
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8 space-y-12">
+
+        <!-- Introduction -->
+        <section class="text-center max-w-3xl mx-auto space-y-4">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900">
+                Your Path to <span class="text-sky-600">Mobile Mastery</span>
+            </h1>
+            <p class="text-lg text-slate-600 leading-relaxed">
+                This interactive roadmap guides you from foundational JavaScript through to advanced React Native deployment using the Expo/EAS toolchain. Select a phase below to begin exploring.
+            </p>
+        </section>
+
+        <!-- Visualization Section: Skill Matrix -->
+        <!-- Visualization & Content Choices: 
+             Data: Skills required (JS, UI, Backend, etc.).
+             Goal: Inform user of the breadth of skills needed.
+             Method: Radar Chart.
+             Interaction: Tooltips on hover.
+             Justification: Radar charts are excellent for showing multi-dimensional skill profiles. 
+             Confirming NO SVG/Mermaid. 
+        -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="space-y-4">
+                    <h2 class="text-2xl font-bold text-slate-800">The React Native Skill Matrix</h2>
+                    <p class="text-slate-600">
+                        Modern mobile development isn't just about UI. To become a Senior Developer in 2025, you need a balance of core logic, native understanding, data management, and operational skills.
+                    </p>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li class="flex items-center"><span class="w-3 h-3 rounded-full bg-sky-500 mr-2"></span> <strong>Core Stack:</strong> JS/TS & React Fundamentals.</li>
+                        <li class="flex items-center"><span class="w-3 h-3 rounded-full bg-indigo-500 mr-2"></span> <strong>Mobile Specifics:</strong> Native Components & Navigation.</li>
+                        <li class="flex items-center"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-2"></span> <strong>Data & Scale:</strong> API Caching, Global State, Persistence.</li>
+                        <li class="flex items-center"><span class="w-3 h-3 rounded-full bg-rose-500 mr-2"></span> <strong>Ops & Quality:</strong> Testing, CI/CD, App Store Deployment.</li>
+                    </ul>
+                </div>
+                <div class="w-full flex justify-center">
+                    <div class="chart-container">
+                        <canvas id="skillRadarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Interaction Area: Roadmap Explorer -->
+        <section id="roadmap-explorer" class="scroll-mt-24">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 border-l-4 border-sky-500 pl-3">Learning Phases</h2>
+            
+            <!-- Phase Navigation -->
+            <div class="flex flex-wrap gap-2 mb-8 justify-center md:justify-start" id="phase-nav">
+                <!-- Buttons injected by JS -->
+            </div>
+
+            <!-- Dynamic Content Display -->
+            <div class="grid lg:grid-cols-3 gap-8">
+                
+                <!-- Left Column: Phase Summary & Context -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-slate-900 text-white rounded-xl p-6 shadow-lg sticky top-24 transition-all duration-300" id="phase-summary-card">
+                        <h3 id="phase-title" class="text-2xl font-bold mb-2 text-[#61dafb]">Select a Phase</h3>
+                        <p id="phase-desc" class="text-slate-300 text-sm leading-relaxed mb-4">Click on a phase button above to view the curriculum details.</p>
+                        <div class="border-t border-slate-700 pt-4 mt-4">
+                            <h4 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-2">Focus Area</h4>
+                            <div id="phase-focus" class="flex flex-wrap gap-2">
+                                <!-- Tags injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Learning Modules (Cards) -->
+                <div class="lg:col-span-2">
+                    <div id="topics-container" class="grid gap-4">
+                        <!-- Topic cards injected by JS -->
+                        <div class="p-8 text-center text-slate-400 bg-white border border-dashed border-slate-300 rounded-xl">
+                            Select a phase to load the learning roadmap.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Secondary Visualization: Complexity Curve -->
+        <!-- Visualization & Content Choices:
+             Data: Conceptual difficulty over phases.
+             Goal: Manage user expectations about the learning curve.
+             Method: Line Chart (Chart.js).
+             Interaction: None (Static informational).
+        -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 mt-8">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">Learning Curve Expectations</h2>
+                <p class="text-slate-600">
+                    The journey starts with familiar web concepts, spikes when learning mobile-specific paradigms, and plateaus as you master tooling and ecosystem patterns.
+                </p>
+            </div>
+            <div class="chart-container">
+                <canvas id="complexityChart"></canvas>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-8">
+        <div class="container mx-auto px-4 text-center text-slate-500 text-sm">
+            <p>Based on the <strong>React Native Learning Roadmap (2025)</strong>.</p>
+            <p class="mt-2">Use the checkboxes to track your progress locally.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Data Source (Based on provided Report) ---
+        const roadmapData = [
+            {
+                id: 0,
+                title: "Phase 0: Foundations",
+                shortTitle: "0. Foundations",
+                description: "This phase establishes the non-negotiable prerequisites. Before diving into React Native, you need a solid grasp of modern JavaScript, asynchronous programming patterns, and the TypeScript type system.",
+                focus: ["ES6+", "Async/Await", "TypeScript", "Git", "NPM/Yarn"],
+                topics: [
+                    {
+                        name: "Modern JavaScript (ES6+)",
+                        concepts: "Variables (let/const), Arrow Functions, Template Literals, Destructuring, Spread/Rest Operators, Classes.",
+                        why: "JavaScript is the language of React Native. Mastery of modern syntax ensures clean, efficient, and readable code."
+                    },
+                    {
+                        name: "Asynchronous JavaScript",
+                        concepts: "Promises, async/await, Error Handling (try/catch).",
+                        why: "Essential for network requests (API calls), file system operations, and interacting with native modules without blocking the UI."
+                    },
+                    {
+                        name: "TypeScript",
+                        concepts: "Static Typing, Interfaces, Generic Types, Union Types.",
+                        why: "Mandatory for large-scale projects. It catches errors early, improves tooling, and makes codebases easier to maintain."
+                    },
+                    {
+                        name: "Essential Tooling",
+                        concepts: "Git/GitHub, NPM/Yarn/pnpm, VS Code Setup.",
+                        why: "Non-code skills required for collaboration and managing project dependencies effectively."
+                    }
+                ]
+            },
+            {
+                id: 1,
+                title: "Phase 1: React Core Concepts",
+                shortTitle: "1. React Core",
+                description: "You must understand how React works conceptually on the web before moving to the mobile implementation. This phase focuses on the component model and state management.",
+                focus: ["JSX", "Hooks", "Lifecycle", "Component Composition"],
+                topics: [
+                    {
+                        name: "JSX & Components",
+                        concepts: "Component Composition, Props, Conditional Rendering, Lists (.map() and key).",
+                        why: "Components are the building blocks of every screen. Understanding how to compose them is critical."
+                    },
+                    {
+                        name: "State Management (Local)",
+                        concepts: "useState, useEffect, Lifting State Up.",
+                        why: "How components manage their own data and react to changes defines the interactivity of your app."
+                    },
+                    {
+                        name: "Advanced Hooks",
+                        concepts: "useContext, useReducer, useCallback, useMemo.",
+                        why: "For managing complex component logic, avoiding performance pitfalls, and handling shared state efficiently."
+                    },
+                    {
+                        name: "Component Lifecycle",
+                        concepts: "Mount, Update, Unmount (via useEffect).",
+                        why: "Crucial for handling side effects like data fetching and subscriptions correctly without memory leaks."
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "Phase 2: React Native Fundamentals",
+                shortTitle: "2. RN Fundamentals",
+                description: "The transition from web to mobile. Here you learn to translate HTML/CSS knowledge into Native Components and Flexbox styling, and handle navigation.",
+                focus: ["Core Components", "Flexbox", "React Navigation", "Expo Go"],
+                topics: [
+                    {
+                        name: "React Native Components",
+                        concepts: "View, Text, Image, ScrollView, TouchableOpacity, TextInput.",
+                        why: "The mobile equivalents of HTML tags that render to true native widgets."
+                    },
+                    {
+                        name: "Styling & Layout",
+                        concepts: "Flexbox, Platform-Specific Styles, StyleSheet, Responsive Design.",
+                        why: "Master the Flexbox system for creating adaptive layouts that work on all screen sizes."
+                    },
+                    {
+                        name: "Navigation",
+                        concepts: "Stack, Tabs, Drawer Navigation, Passing Parameters.",
+                        why: "React Navigation is the universal standard for routing in mobile apps."
+                    },
+                    {
+                        name: "Expo Ecosystem",
+                        concepts: "expo start, app.json, Expo SDK libraries.",
+                        why: "The fastest way to iterate and access common native features without writing native code."
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "Phase 3: Scaling & Data",
+                shortTitle: "3. Scaling & Data",
+                description: "Handling real-world app complexity. This phase covers managing global state, interacting with servers/APIs, and persisting user data.",
+                focus: ["Zustand/Redux", "TanStack Query", "APIs", "AsyncStorage"],
+                topics: [
+                    {
+                        name: "State Management (Global)",
+                        concepts: "Zustand, Redux Toolkit, Context API.",
+                        why: "Required for large apps to prevent 'prop drilling' and manage user sessions/themes."
+                    },
+                    {
+                        name: "Server State Management",
+                        concepts: "TanStack Query (Caching, Synchronization, Optimistic UI).",
+                        why: "The modern standard for managing asynchronous API data and caching."
+                    },
+                    {
+                        name: "Backend & Data Layer",
+                        concepts: "Firebase Firestore, REST APIs, GraphQL.",
+                        why: "Learning to build or connect to a robust backend service to power your app."
+                    },
+                    {
+                        name: "Persistence",
+                        concepts: "AsyncStorage, expo-secure-store.",
+                        why: "For saving user settings, offline tokens, and temporary data between app launches."
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "Phase 4: Advanced & Deployment",
+                shortTitle: "4. Pro & Deploy",
+                description: "The final polish. Optimization, testing, native modules, and the automated pipeline to get your app into the App Store and Google Play.",
+                focus: ["New Architecture", "Performance", "Jest/Detox", "EAS Build"],
+                topics: [
+                    {
+                        name: "Native Modules (New Arch)",
+                        concepts: "JSI, Fabric, TurboModules, Expo Config Plugins.",
+                        why: "How to bridge JavaScript code with platform-specific native code (Kotlin/Swift) efficiently."
+                    },
+                    {
+                        name: "Performance Optimization",
+                        concepts: "FlatList/FlashList, Memoization, Hermes Engine.",
+                        why: "Ensuring the application remains fast and fluid, especially on low-end devices."
+                    },
+                    {
+                        name: "Testing",
+                        concepts: "Unit Testing (Jest), Component (RNTL), E2E (Detox).",
+                        why: "Writing automated tests to ensure app quality and prevent regressions."
+                    },
+                    {
+                        name: "CI/CD & Deployment",
+                        concepts: "EAS Build, EAS Submit, Profiles, Signing.",
+                        why: "Automating the release process to deliver production-ready binaries to stores."
+                    }
+                ]
+            }
+        ];
+
+        // --- State Management ---
+        let currentPhase = 0;
+        let progress = JSON.parse(localStorage.getItem('rnRoadmapProgress')) || {};
+
+        // --- DOM Elements ---
+        const phaseNav = document.getElementById('phase-nav');
+        const topicsContainer = document.getElementById('topics-container');
+        const phaseTitle = document.getElementById('phase-title');
+        const phaseDesc = document.getElementById('phase-desc');
+        const phaseFocus = document.getElementById('phase-focus');
+        const progressCounter = document.getElementById('progress-counter');
+        const totalItemsEl = document.getElementById('total-items');
+
+        // --- Initialization ---
+        function init() {
+            renderNav();
+            renderPhase(0);
+            updateProgressUI();
+            initCharts();
+        }
+
+        // --- Render Functions ---
+        function renderNav() {
+            phaseNav.innerHTML = '';
+            roadmapData.forEach((phase, index) => {
+                const btn = document.createElement('button');
+                btn.className = `phase-btn px-4 py-2 rounded-full border border-slate-300 text-sm font-semibold transition-all duration-200 hover:bg-slate-100 ${index === 0 ? 'active' : 'bg-white text-slate-600'}`;
+                btn.innerText = phase.shortTitle;
+                btn.onclick = () => {
+                    document.querySelectorAll('.phase-btn').forEach(b => {
+                        b.classList.remove('active', 'bg-sky-500', 'text-white', 'border-sky-500');
+                        b.classList.add('bg-white', 'text-slate-600');
+                    });
+                    btn.classList.remove('bg-white', 'text-slate-600');
+                    btn.classList.add('active');
+                    renderPhase(index);
+                };
+                phaseNav.appendChild(btn);
+            });
+        }
+
+        function renderPhase(index) {
+            currentPhase = index;
+            const data = roadmapData[index];
+
+            // Update Left Summary Card with Fade Effect
+            const summaryCard = document.getElementById('phase-summary-card');
+            summaryCard.classList.add('opacity-50');
+            setTimeout(() => {
+                phaseTitle.innerText = data.title;
+                phaseDesc.innerText = data.description;
+                
+                phaseFocus.innerHTML = '';
+                data.focus.forEach(tag => {
+                    const span = document.createElement('span');
+                    span.className = 'px-2 py-1 bg-slate-700 rounded text-xs text-sky-200';
+                    span.innerText = tag;
+                    phaseFocus.appendChild(span);
+                });
+                summaryCard.classList.remove('opacity-50');
+            }, 150);
+
+            // Render Topics
+            topicsContainer.innerHTML = '';
+            data.topics.forEach((topic, i) => {
+                const topicId = `p${data.id}-t${i}`;
+                const isChecked = progress[topicId] ? 'checked' : '';
+                
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow duration-200";
+                card.innerHTML = `
+                    <div class="flex items-start justify-between mb-2">
+                        <h4 class="text-lg font-bold text-slate-800">${topic.name}</h4>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" class="check-custom w-5 h-5 rounded border-slate-300 text-sky-600 focus:ring-sky-500" ${isChecked} onchange="toggleTopic('${topicId}')">
+                        </label>
+                    </div>
+                    <div class="space-y-3 transition-colors duration-200">
+                        <div>
+                            <span class="text-xs font-semibold text-sky-600 uppercase tracking-wide">Key Concepts</span>
+                            <p class="text-slate-700 text-sm mt-1">${topic.concepts}</p>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Why It Matters</span>
+                            <p class="text-slate-500 text-sm italic mt-1 bg-slate-50 p-2 rounded border border-slate-100">"${topic.why}"</p>
+                        </div>
+                    </div>
+                `;
+                topicsContainer.appendChild(card);
+            });
+        }
+
+        // --- Logic: Progress Tracking ---
+        window.toggleTopic = function(id) {
+            if (progress[id]) {
+                delete progress[id];
+            } else {
+                progress[id] = true;
+            }
+            localStorage.setItem('rnRoadmapProgress', JSON.stringify(progress));
+            updateProgressUI();
+            
+            // Visual feedback on the specific card
+            const checkbox = document.querySelector(`input[onchange="toggleTopic('${id}')"]`);
+            if(checkbox) {
+                const contentDiv = checkbox.closest('.bg-white').querySelector('.space-y-3');
+                if(checkbox.checked) {
+                    contentDiv.classList.add('opacity-50');
+                } else {
+                    contentDiv.classList.remove('opacity-50');
+                }
+            }
+        };
+
+        function updateProgressUI() {
+            let total = 0;
+            roadmapData.forEach(p => total += p.topics.length);
+            const mastered = Object.keys(progress).length;
+            
+            progressCounter.innerText = mastered;
+            totalItemsEl.innerText = total;
+        }
+
+        // --- Charts Implementation ---
+        function initCharts() {
+            // 1. Radar Chart: Skill Matrix
+            const ctxRadar = document.getElementById('skillRadarChart').getContext('2d');
+            new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['JavaScript/TS', 'React Core', 'Native UI/UX', 'Backend/Data', 'DevOps/Deploy', 'Testing'],
+                    datasets: [{
+                        label: 'Ideal Senior Dev Profile',
+                        data: [90, 95, 85, 75, 70, 80],
+                        fill: true,
+                        backgroundColor: 'rgba(14, 165, 233, 0.2)', // Sky 500
+                        borderColor: 'rgb(14, 165, 233)',
+                        pointBackgroundColor: 'rgb(14, 165, 233)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(14, 165, 233)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#e2e8f0' },
+                            pointLabels: {
+                                font: { size: 12, family: "'Inter', sans-serif" },
+                                color: '#475569'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // 2. Line Chart: Complexity Curve
+            const ctxLine = document.getElementById('complexityChart').getContext('2d');
+            new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: ['Phase 0: Foundations', 'Phase 1: React', 'Phase 2: RN Basics', 'Phase 3: Data & Scale', 'Phase 4: Advanced'],
+                    datasets: [{
+                        label: 'Learning Curve Difficulty',
+                        data: [20, 35, 65, 55, 85], // Spikes at RN Basics, dips slightly at data (familiar concepts), spikes at Advanced
+                        borderColor: '#6366f1', // Indigo 500
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Cognitive Load (%)' },
+                            grid: { borderDash: [5, 5] }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const tips = [
+                                        "JS syntax is crucial but logical.",
+                                        "React introduces a new way of thinking (Declarative).",
+                                        "High spike: Platform specifics, Flexbox quirks, Navigation.",
+                                        "Plateau: Applying known logic to Data/State.",
+                                        "Advanced: Native modules and build pipelines are complex."
+                                    ];
+                                    return tips[context.dataIndex];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Start App
+        window.onload = init;
+
+    </script>
+</body>
+</html>
